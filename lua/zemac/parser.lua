@@ -39,7 +39,7 @@ function M.parse_line(line, buffer_line)
                 end
             end
 
-            err.file = err.file
+            err.file = M.find_full_path(err.file)
             err.lnum = err.lnum
             err.col = err.col
             err.text = err.text
@@ -63,7 +63,8 @@ function M.parse_buffer(bufnr)
     end
 
     -- skip header lines
-    local lines = vim.api.nvim_buf_get_lines(bufnr, buffer.HEADER_LINES, -1, false)
+    local lines =
+        vim.api.nvim_buf_get_lines(bufnr, buffer.HEADER_LINES, -1, false)
     for i, line in ipairs(lines) do
         local buffer_line = buffer.HEADER_LINES + i
         local error = M.parse_line(line, buffer_line)
@@ -73,6 +74,15 @@ function M.parse_buffer(bufnr)
     end
 
     return errors
+end
+
+function M.find_full_path(file)
+    local found = vim.fn.findfile(file, "**")
+    if found ~= "" then
+        file = found
+    end
+
+    return file
 end
 
 return M

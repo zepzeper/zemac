@@ -49,8 +49,8 @@ local defaults = {
         compile = "<C-z>c",
         recompile = "<C-z>r",
         toggle = "<C-z>t",
-        -- next_error = "<C-z>n",
-        -- prev_error = "<C-z>p",
+        next_error = "<C-z>j",
+        prev_error = "<C-z>k",
     },
 
     ---@type Zemac.BufferKeymaps
@@ -60,10 +60,10 @@ local defaults = {
         run_header = "<C-z>h",
         kill = "<C-z>k",
         goto_error = "<CR>",
-        -- next_error = "<C-z>n",
-        -- prev_error = "<C-z>p",
-        history_prev = "<C-z>n", -- or "<C-p>"
-        history_next = "<C-z>p", -- or "<C-n>"
+        next_error = "<C-z>j",
+        prev_error = "<C-z>k",
+        history_prev = "<C-z>n",
+        history_next = "<C-z>p",
     },
 }
 
