@@ -20,7 +20,7 @@ M.patterns_by_compiler = {
         {
             pattern = "^([^%(]+)%((%d+),(%d+)%): (%w+) %w+: (.+)$",
             groups = { "file", "lnum", "col", "type", "text" },
-        }
+        },
     },
     python = {
         {
@@ -72,7 +72,7 @@ M.patterns_by_compiler = {
             pattern = "^[%w]*:?%s*([^:]+):(%d+): (.+)$",
             groups = { "file", "lnum", "text" },
         },
-    }
+    },
 }
 
 --- Detect compiler from command string
@@ -84,7 +84,11 @@ function M.detect_compiler(command)
     end
 
     -- Check for direct compiler invocations
-    if command:match("^gcc") or command:match("^g%+%+") or command:match("^clang") then
+    if
+        command:match("^gcc")
+        or command:match("^g%+%+")
+        or command:match("^clang")
+    then
         return "gcc"
     elseif command:match("^go ") or command:match("^go$") then
         return "go"
@@ -155,7 +159,8 @@ function M.parse_buffer(bufnr, compiler)
     end
 
     -- Skip header lines
-    local lines = vim.api.nvim_buf_get_lines(bufnr, buffer.HEADER_LINES, -1, false)
+    local lines =
+        vim.api.nvim_buf_get_lines(bufnr, buffer.HEADER_LINES, -1, false)
     for i, line in ipairs(lines) do
         local buffer_line = buffer.HEADER_LINES + i
         local err = M.parse_line(line, buffer_line, compiler)

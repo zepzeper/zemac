@@ -101,14 +101,16 @@ function M.next_error()
 
     local err = M.errors[M.current_error_idx]
     -- Go to previous window
-    if buffer.source_winnr and vim.api.nvim_win_is_valid(buffer.source_winnr) then
+    if
+        buffer.source_winnr and vim.api.nvim_win_is_valid(buffer.source_winnr)
+    then
         vim.api.nvim_set_current_win(buffer.source_winnr)
     else
         vim.cmd("wincmd p")
     end
 
     vim.cmd("edit " .. err.file)
-    vim.api.nvim_win_set_cursor(0, {err.lnum, (err.col or 1) - 1})
+    vim.api.nvim_win_set_cursor(0, { err.lnum, (err.col or 1) - 1 })
 end
 
 --- Jump to the previous error in the list
@@ -126,14 +128,16 @@ function M.prev_error()
 
     local err = M.errors[M.current_error_idx]
     -- Go to previous window
-    if buffer.source_winnr and vim.api.nvim_win_is_valid(buffer.source_winnr) then
+    if
+        buffer.source_winnr and vim.api.nvim_win_is_valid(buffer.source_winnr)
+    then
         vim.api.nvim_set_current_win(buffer.source_winnr)
     else
         vim.cmd("wincmd p")
     end
 
     vim.cmd("edit " .. err.file)
-    vim.api.nvim_win_set_cursor(0, {err.lnum, (err.col or 1) - 1})
+    vim.api.nvim_win_set_cursor(0, { err.lnum, (err.col or 1) - 1 })
 end
 
 --- Jump to the error under cursor or at current index
