@@ -60,6 +60,30 @@ function M.setup_buffer(bufnr)
         { desc = "Go to error / run command" }
     ))
 
+    -- History navigation (only on line 1)
+    map_if_set(
+        "n",
+        keys.history_prev,
+        function()
+            local line_num = vim.api.nvim_win_get_cursor(0)[1]
+            if line_num == 1 then
+                require("zepzeper.compile").history_prev()
+            else
+                vim.cmd("normal! k")
+            end
+        end,
+        vim.tbl_extend("force", opts, { desc = "Previous command in history" })
+    )
+
+    map_if_set("n", keys.history_next, function()
+        local line_num = vim.api.nvim_win_get_cursor(0)[1]
+        if line_num == 1 then
+            require("zepzeper.compile").history_next()
+        else
+            vim.cmd("normal! j")
+        end
+    end, vim.tbl_extend("force", opts, { desc = "Next command in history" }))
+
     -- Next error
     map_if_set("n", keys.next_error, function()
         require("zepzeper").next_error()

@@ -21,7 +21,8 @@ local M = {}
 ---@field kill string|false Kill running compilation
 ---@field goto_error string|false Jump to error under cursor
 ---@field next_error string|false Next error in buffer
----@field prev_error string|false Previous error in buffer
+---@field history_prev string|false Previous error in buffer
+---@field history_next string|false Previous error in buffer
 
 ---@class Zepzeper.Config
 ---@field compile_command string Default compile command
@@ -35,7 +36,7 @@ local M = {}
 local defaults = {
     compile_command = "make -k",
     save_before_compile = true,
-    auto_scroll = true,
+    -- auto_scroll = true,
 
     ---@type Zepzeper.Win
     win = {
@@ -48,8 +49,8 @@ local defaults = {
         compile = "<C-z>c",
         recompile = "<C-z>r",
         toggle = "<C-z>t",
-        next_error = "<C-z>n",
-        prev_error = "<C-z>p",
+        -- next_error = "<C-z>n",
+        -- prev_error = "<C-z>p",
     },
 
     ---@type Zepzeper.BufferKeymaps
@@ -59,8 +60,10 @@ local defaults = {
         run_header = "<C-z>h",
         kill = "<C-z>k",
         goto_error = "<CR>",
-        next_error = "<C-z>n",
-        prev_error = "<C-z>p",
+        -- next_error = "<C-z>n",
+        -- prev_error = "<C-z>p",
+        history_prev = "<C-z>n", -- or "<C-p>"
+        history_next = "<C-z>p", -- or "<C-n>"
     },
 }
 

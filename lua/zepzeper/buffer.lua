@@ -32,6 +32,14 @@ function M.create()
     if M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr) then
         return M.bufnr
     end
+
+    -- Check if a buffer with our name already exists (e.g., after plugin reload)
+    local existing = vim.fn.bufnr("zepzeper-output")
+    if existing ~= -1 and vim.api.nvim_buf_is_valid(existing) then
+        M.bufnr = existing
+        return M.bufnr
+    end
+
     M.bufnr = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_buf_set_name(M.bufnr, "zepzeper-output")
     vim.api.nvim_buf_set_option(M.bufnr, "buftype", "nofile")
@@ -47,13 +55,38 @@ end
 
 --- Open the compile buffer window
 function M.open()
+    local config = require("zepzeper.config")
+    local win = config.win()
     local bufnr = M.create()
+
     if M.winnr and vim.api.nvim_win_is_valid(M.winnr) then
         vim.api.nvim_set_current_win(M.winnr)
+        return
+    end
+
+    -- Determine split command based on position
+    local split_cmd
+    if win.position == "bottom" then
+        split_cmd = "botright split"
+    elseif win.position == "top" then
+        split_cmd = "topleft split"
+    elseif win.position == "left" then
+        split_cmd = "topleft vsplit"
+    elseif win.position == "right" then
+        split_cmd = "botright vsplit"
     else
-        vim.cmd("split")
-        M.winnr = vim.api.nvim_get_current_win()
-        vim.api.nvim_win_set_buf(M.winnr, bufnr)
+        split_cmd = "botright split" -- fallback
+    end
+
+    vim.cmd(split_cmd)
+    M.winnr = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_buf(M.winnr, bufnr)
+
+    -- Set window size
+    if win.position == "bottom" or win.position == "top" then
+        vim.api.nvim_win_set_height(M.winnr, win.size)
+    else
+        vim.api.nvim_win_set_width(M.winnr, win.size)
     end
 end
 
@@ -80,6 +113,7 @@ end
 --- Append lines to the buffer after the header
 ---@param lines string[] Lines to append
 function M.append(lines)
+    local config = require("zepzeper.config")
     if M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr) then
         -- Append after header, -1 means end of buffer
         local line_count = vim.api.nvim_buf_line_count(M.bufnr)
@@ -91,6 +125,16 @@ function M.append(lines)
             lines
         )
     end
+
+    -- -- Auto-scroll while keeping header visible
+    -- if config.get("auto_scroll") and M.winnr and vim.api.nvim_win_is_valid(M.winnr) then
+    --     vim.api.nvim_win_call(M.winnr, function()
+    --         -- Scroll to bottom
+    --         vim.cmd("normal! G")
+    --         -- Force header to stay visible at top
+    --         vim.fn.winrestview({ topline = 1 })
+    --     end)
+    -- end
 end
 
 --- Toggle the compile buffer window visibility

@@ -1,5 +1,9 @@
 lua_fmt:
 	echo "===> Formatting"
+	# Actual forloop to similate for testing
+	for i in $$(seq 1 100); do \
+		echo x; \
+	done
 	stylua lua/ --config-path=.stylua.toml
 
 lua_test:

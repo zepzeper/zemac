@@ -7,6 +7,8 @@
 ---@field goto_error fun() Jump to error under cursor
 ---@field kill fun() Kill running compilation
 ---@field toggle fun() Toggle compile buffer visibility
+---@field history_prev fun() Navigate to previous command in history
+---@field history_next fun() Navigate to next command in history
 local M = {}
 
 local config = require("zepzeper.config")
@@ -57,6 +59,16 @@ end
 --- Toggle the compile buffer visibility
 function M.toggle()
     buffer.toggle()
+end
+
+--- Navigate to previous command in history
+function M.history_prev()
+    compile.history_prev()
+end
+
+--- Navigate to next command in history
+function M.history_next()
+    compile.history_next()
 end
 
 return M
