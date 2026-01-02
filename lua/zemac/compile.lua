@@ -58,6 +58,11 @@ function M.run(cmd)
                 if code ~= 0 then
                     buffer.append({ "", "Exited with code: " .. code })
                 end
+
+                -- Debug: parse and print errors
+                local parser = require("zemac.parser")
+                local errors = parser.parse_buffer(buffer.bufnr)
+                print("Found " .. #errors .. " errors") -- shows in :messages
             end)
         end,
     })
@@ -74,9 +79,10 @@ end
 function M.recompile()
     if M.last_command then
         M.run(M.last_command)
+        return
     end
 
-    vim.notify("Failed to recompile last command not found")
+    vim.notify("No previous compile command", vim.log.levels.WARN)
 end
 
 --- Jump to the next error in the list

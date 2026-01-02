@@ -42,11 +42,10 @@ function M.create()
 
     M.bufnr = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_buf_set_name(M.bufnr, "zemac-output")
-    vim.api.nvim_buf_set_option(M.bufnr, "buftype", "nofile")
-    vim.api.nvim_buf_set_option(M.bufnr, "bufhidden", "hide")
-    vim.api.nvim_buf_set_option(M.bufnr, "swapfile", false)
-    vim.api.nvim_buf_set_option(M.bufnr, "filetype", "compile")
-
+    vim.bo[M.bufnr].buftype = "nofile"
+    vim.bo[M.bufnr].bufhidden = "hide"
+    vim.bo[M.bufnr].swapfile = false
+    vim.bo[M.bufnr].filetype = "compile"
     -- Setup buffer-local keymaps
     require("zemac.keymaps").setup_buffer(M.bufnr)
 
