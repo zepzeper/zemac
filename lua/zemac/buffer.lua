@@ -1,4 +1,4 @@
----@class Zepzeper.Buffer
+---@class Zemac.Buffer
 ---@field bufnr number|nil Buffer number for compile output
 ---@field winnr number|nil Window number for compile output
 ---@field job_id number|nil Current job ID
@@ -34,28 +34,28 @@ function M.create()
     end
 
     -- Check if a buffer with our name already exists (e.g., after plugin reload)
-    local existing = vim.fn.bufnr("zepzeper-output")
+    local existing = vim.fn.bufnr("zemac-output")
     if existing ~= -1 and vim.api.nvim_buf_is_valid(existing) then
         M.bufnr = existing
         return M.bufnr
     end
 
     M.bufnr = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_name(M.bufnr, "zepzeper-output")
+    vim.api.nvim_buf_set_name(M.bufnr, "zemac-output")
     vim.api.nvim_buf_set_option(M.bufnr, "buftype", "nofile")
     vim.api.nvim_buf_set_option(M.bufnr, "bufhidden", "hide")
     vim.api.nvim_buf_set_option(M.bufnr, "swapfile", false)
     vim.api.nvim_buf_set_option(M.bufnr, "filetype", "compile")
 
     -- Setup buffer-local keymaps
-    require("zepzeper.keymaps").setup_buffer(M.bufnr)
+    require("zemac.keymaps").setup_buffer(M.bufnr)
 
     return M.bufnr
 end
 
 --- Open the compile buffer window
 function M.open()
-    local config = require("zepzeper.config")
+    local config = require("zemac.config")
     local win = config.win()
     local bufnr = M.create()
 
@@ -113,7 +113,7 @@ end
 --- Append lines to the buffer after the header
 ---@param lines string[] Lines to append
 function M.append(lines)
-    local config = require("zepzeper.config")
+    local config = require("zemac.config")
     if M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr) then
         -- Append after header, -1 means end of buffer
         local line_count = vim.api.nvim_buf_line_count(M.bufnr)

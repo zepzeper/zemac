@@ -1,5 +1,5 @@
----@class Zepzeper.Main
----@field setup fun(opts?: Zepzeper.Config) Setup the plugin
+---@class Zemac.Main
+---@field setup fun(opts?: Zemac.Config) Setup the plugin
 ---@field compile fun(cmd?: string) Run a compile command
 ---@field recompile fun() Recompile with last command
 ---@field next_error fun() Jump to next error
@@ -11,14 +11,14 @@
 ---@field history_next fun() Navigate to next command in history
 local M = {}
 
-local config = require("zepzeper.config")
-local compile = require("zepzeper.compile")
-local buffer = require("zepzeper.buffer")
-local commands = require("zepzeper.commands")
-local keymaps = require("zepzeper.keymaps")
+local config = require("zemac.config")
+local compile = require("zemac.compile")
+local buffer = require("zemac.buffer")
+local commands = require("zemac.commands")
+local keymaps = require("zemac.keymaps")
 
 --- Setup the plugin with user configuration
----@param opts? Zepzeper.Config User configuration options
+---@param opts? Zemac.Config User configuration options
 function M.setup(opts)
     config.setup(opts)
     commands.setup()

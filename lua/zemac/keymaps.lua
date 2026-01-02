@@ -1,7 +1,7 @@
----@class Zepzeper.Keymaps
+---@class Zemac.Keymaps
 local M = {}
 
-local config = require("zepzeper.config")
+local config = require("zemac.config")
 
 --- Set a keymap if the key is not false/nil
 ---@param mode string Vim mode ("n", "i", "v", etc.)
@@ -23,25 +23,25 @@ function M.setup_buffer(bufnr)
 
     -- Quit/close buffer
     map_if_set("n", keys.quit, function()
-        require("zepzeper.buffer").toggle()
+        require("zemac.buffer").toggle()
     end, vim.tbl_extend("force", opts, { desc = "Close compile buffer" }))
 
     -- Recompile with last command
     map_if_set("n", keys.recompile, function()
-        require("zepzeper").recompile()
+        require("zemac").recompile()
     end, vim.tbl_extend("force", opts, { desc = "Recompile" }))
 
     -- Run the (possibly edited) command from line 1
     map_if_set("n", keys.run_header, function()
         local cmd = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
         if cmd and cmd ~= "" then
-            require("zepzeper").compile(cmd)
+            require("zemac").compile(cmd)
         end
     end, vim.tbl_extend("force", opts, { desc = "Run command from header" }))
 
     -- Kill running job
     map_if_set("n", keys.kill, function()
-        require("zepzeper").kill()
+        require("zemac").kill()
     end, vim.tbl_extend("force", opts, { desc = "Kill compilation" }))
 
     -- Enter: on line 1 = rerun edited command, otherwise jump to error
@@ -50,9 +50,9 @@ function M.setup_buffer(bufnr)
         if line_num == 1 then
             -- Get command from line 1 and run it
             local cmd = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
-            require("zepzeper").compile(cmd)
+            require("zemac").compile(cmd)
         else
-            require("zepzeper").goto_error()
+            require("zemac").goto_error()
         end
     end, vim.tbl_extend(
         "force",
@@ -67,7 +67,7 @@ function M.setup_buffer(bufnr)
         function()
             local line_num = vim.api.nvim_win_get_cursor(0)[1]
             if line_num == 1 then
-                require("zepzeper.compile").history_prev()
+                require("zemac.compile").history_prev()
             else
                 vim.cmd("normal! k")
             end
@@ -78,7 +78,7 @@ function M.setup_buffer(bufnr)
     map_if_set("n", keys.history_next, function()
         local line_num = vim.api.nvim_win_get_cursor(0)[1]
         if line_num == 1 then
-            require("zepzeper.compile").history_next()
+            require("zemac.compile").history_next()
         else
             vim.cmd("normal! j")
         end
@@ -86,12 +86,12 @@ function M.setup_buffer(bufnr)
 
     -- Next error
     map_if_set("n", keys.next_error, function()
-        require("zepzeper").next_error()
+        require("zemac").next_error()
     end, vim.tbl_extend("force", opts, { desc = "Next error" }))
 
     -- Previous error
     map_if_set("n", keys.prev_error, function()
-        require("zepzeper").prev_error()
+        require("zemac").prev_error()
     end, vim.tbl_extend("force", opts, { desc = "Previous error" }))
 end
 
@@ -102,14 +102,14 @@ function M.setup_global()
 
     -- Compile (like M-x compile) - prompts for command
     map_if_set("n", keys.compile, function()
-        local compile = require("zepzeper.compile")
+        local compile = require("zemac.compile")
         local default_cmd = compile.last_command
             or config.get("compile_command")
         vim.ui.input(
             { prompt = "Compile: ", default = default_cmd },
             function(cmd)
                 if cmd then
-                    require("zepzeper").compile(cmd)
+                    require("zemac").compile(cmd)
                 end
             end
         )
@@ -117,21 +117,21 @@ function M.setup_global()
 
     -- Recompile (like M-x recompile) - runs last command immediately
     map_if_set("n", keys.recompile, function()
-        require("zepzeper").recompile()
+        require("zemac").recompile()
     end, vim.tbl_extend("force", opts, { desc = "Recompile" }))
 
     -- Toggle compile buffer visibility
     map_if_set("n", keys.toggle, function()
-        require("zepzeper").toggle()
+        require("zemac").toggle()
     end, vim.tbl_extend("force", opts, { desc = "Toggle compile buffer" }))
 
     -- Global next/prev error (like Emacs M-g M-n / M-g M-p)
     map_if_set("n", keys.next_error, function()
-        require("zepzeper").next_error()
+        require("zemac").next_error()
     end, vim.tbl_extend("force", opts, { desc = "Next compile error" }))
 
     map_if_set("n", keys.prev_error, function()
-        require("zepzeper").prev_error()
+        require("zemac").prev_error()
     end, vim.tbl_extend("force", opts, { desc = "Previous compile error" }))
 end
 

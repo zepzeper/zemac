@@ -1,20 +1,20 @@
----@class Zepzeper
+---@class Zemac
 local M = {}
 
----@alias Zepzeper.Position "bottom" | "top" | "left" | "right"
+---@alias Zemac.Position "bottom" | "top" | "left" | "right"
 
----@class Zepzeper.Win
----@field position Zepzeper.Position Window position
+---@class Zemac.Win
+---@field position Zemac.Position Window position
 ---@field size number Height for bottom/top, width for left/right
 
----@class Zepzeper.Keymaps
+---@class Zemac.Keymaps
 ---@field compile string|false Keymap to open compile prompt
 ---@field recompile string|false Keymap to recompile last command
 ---@field toggle string|false Keymap to toggle buffer visibility
 ---@field next_error string|false Keymap to jump to next error
 ---@field prev_error string|false Keymap to jump to previous error
 
----@class Zepzeper.BufferKeymaps
+---@class Zemac.BufferKeymaps
 ---@field quit string|false Close compile buffer
 ---@field recompile string|false Recompile with last command
 ---@field run_header string|false Run edited command from header line
@@ -24,27 +24,27 @@ local M = {}
 ---@field history_prev string|false Previous error in buffer
 ---@field history_next string|false Previous error in buffer
 
----@class Zepzeper.Config
+---@class Zemac.Config
 ---@field compile_command string Default compile command
 ---@field save_before_compile boolean Save files before compiling
 ---@field auto_scroll boolean Auto-scroll to bottom on new output
----@field win Zepzeper.Win Window configuration
----@field keymaps Zepzeper.Keymaps Global keymaps
----@field buffer_keymaps Zepzeper.BufferKeymaps Buffer-local keymaps
+---@field win Zemac.Win Window configuration
+---@field keymaps Zemac.Keymaps Global keymaps
+---@field buffer_keymaps Zemac.BufferKeymaps Buffer-local keymaps
 
----@type Zepzeper.Config
+---@type Zemac.Config
 local defaults = {
     compile_command = "make -k",
     save_before_compile = true,
     -- auto_scroll = true,
 
-    ---@type Zepzeper.Win
+    ---@type Zemac.Win
     win = {
         position = "bottom",
         size = 15,
     },
 
-    ---@type Zepzeper.Keymaps
+    ---@type Zemac.Keymaps
     keymaps = {
         compile = "<C-z>c",
         recompile = "<C-z>r",
@@ -53,7 +53,7 @@ local defaults = {
         -- prev_error = "<C-z>p",
     },
 
-    ---@type Zepzeper.BufferKeymaps
+    ---@type Zemac.BufferKeymaps
     buffer_keymaps = {
         quit = "<C-z>q",
         recompile = "<C-z>r",
@@ -67,11 +67,11 @@ local defaults = {
     },
 }
 
----@type Zepzeper.Config
+---@type Zemac.Config
 M.options = {}
 
 --- Setup the plugin configuration
----@param opts? Zepzeper.Config User configuration options
+---@param opts? Zemac.Config User configuration options
 function M.setup(opts)
     M.options = vim.tbl_deep_extend("force", {}, defaults, opts or {})
 end
@@ -84,19 +84,19 @@ function M.get(key)
 end
 
 --- Get window configuration
----@return Zepzeper.Win
+---@return Zemac.Win
 function M.win()
     return M.options.win
 end
 
 --- Get global keymaps configuration
----@return Zepzeper.Keymaps
+---@return Zemac.Keymaps
 function M.keymaps()
     return M.options.keymaps
 end
 
 --- Get buffer-local keymaps configuration
----@return Zepzeper.BufferKeymaps
+---@return Zemac.BufferKeymaps
 function M.buffer_keymaps()
     return M.options.buffer_keymaps
 end

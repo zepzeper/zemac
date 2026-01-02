@@ -1,12 +1,12 @@
----@class Zepzeper.Compile
+---@class Zemac.Compile
 ---@field last_command string|nil Last executed compile command
----@field errors Zepzeper.Error[] List of parsed errors
+---@field errors Zemac.Error[] List of parsed errors
 ---@field current_error_idx number Current error index for navigation
 ---@field command_history string[] List of previous commands
 ---@field history_index number Current position when browsing history (0 = new command)
 local M = {}
 
----@class Zepzeper.Error
+---@class Zemac.Error
 ---@field file string File path
 ---@field lnum number Line number
 ---@field col number Column number
@@ -15,7 +15,7 @@ local M = {}
 
 ---@type string|nil
 M.last_command = nil
----@type Zepzeper.Error[]
+---@type Zemac.Error[]
 M.errors = {}
 ---@type number
 M.current_error_idx = 0
@@ -27,7 +27,7 @@ M.history_index = 0
 --- Run a compile command
 ---@param cmd string Command to run
 function M.run(cmd)
-    local config = require("zepzeper.config")
+    local config = require("zemac.config")
     local command = cmd or config.get("compile_command")
     M.last_command = command
 
@@ -36,7 +36,7 @@ function M.run(cmd)
         vim.cmd("silent! wall") -- silent! ignores errors for readonly buffers
     end
 
-    local buffer = require("zepzeper.buffer")
+    local buffer = require("zemac.buffer")
     buffer.setup_header(command)
     buffer.open()
 
@@ -96,7 +96,7 @@ end
 
 --- Kill the currently running compilation job
 function M.kill()
-    local buffer = require("zepzeper.buffer")
+    local buffer = require("zemac.buffer")
     local job_id = buffer.get_job()
 
     if job_id then
@@ -118,7 +118,7 @@ function M.history_prev()
     local cmd = M.command_history[#M.command_history - M.history_index + 1]
 
     -- Update line 1 in buffer
-    local buffer = require("zepzeper.buffer")
+    local buffer = require("zemac.buffer")
     if buffer.bufnr and vim.api.nvim_buf_is_valid(buffer.bufnr) then
         vim.api.nvim_buf_set_lines(buffer.bufnr, 0, 1, false, { cmd })
     end
@@ -138,7 +138,7 @@ function M.history_next()
         cmd = M.command_history[#M.command_history - M.history_index + 1]
     end
 
-    local buffer = require("zepzeper.buffer")
+    local buffer = require("zemac.buffer")
     if buffer.bufnr and vim.api.nvim_buf_is_valid(buffer.bufnr) then
         vim.api.nvim_buf_set_lines(buffer.bufnr, 0, 1, false, { cmd })
     end
