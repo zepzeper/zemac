@@ -14,6 +14,8 @@ M.job_id = nil
 -- Command + divider line
 ---@type number
 M.HEADER_LINES = 2
+---@type number|nil
+M.source_winnr = nil
 
 --- Setup the buffer header with command and separator
 ---@param command string The compile command to display
@@ -57,6 +59,7 @@ function M.open()
     local config = require("zemac.config")
     local win = config.win()
     local bufnr = M.create()
+    M.source_winnr = vim.api.nvim_get_current_win()
 
     if M.winnr and vim.api.nvim_win_is_valid(M.winnr) then
         vim.api.nvim_set_current_win(M.winnr)

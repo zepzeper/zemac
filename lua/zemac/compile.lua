@@ -61,7 +61,8 @@ function M.run(cmd)
 
                 -- Debug: parse and print errors
                 local parser = require("zemac.parser")
-                M.errors = parser.parse_buffer(buffer.bufnr)
+                local compiler = parser.detect_compiler(command)
+                M.errors = parser.parse_buffer(buffer.bufnr, compiler)
                 M.current_error_idx = 0
             end)
         end,
@@ -87,6 +88,7 @@ end
 
 --- Jump to the next error in the list
 function M.next_error()
+    local buffer = require("zemac.buffer")
     if #M.errors == 0 then
         vim.notify("No errors to jump to", vim.log.levels.WARN)
         return
@@ -99,19 +101,39 @@ function M.next_error()
 
     local err = M.errors[M.current_error_idx]
     -- Go to previous window
-    vim.cmd("wincmd p")
+    if buffer.source_winnr and vim.api.nvim_win_is_valid(buffer.source_winnr) then
+        vim.api.nvim_set_current_win(buffer.source_winnr)
+    else
+        vim.cmd("wincmd p")
+    end
+
     vim.cmd("edit " .. err.file)
-    vim.api.nvim_win_set_cursor(0, {err.lnum, err.col - 1})
+    vim.api.nvim_win_set_cursor(0, {err.lnum, (err.col or 1) - 1})
 end
 
 --- Jump to the previous error in the list
 function M.prev_error()
+    local buffer = require("zemac.buffer")
     if #M.errors == 0 then
         vim.notify("No errors to jump to", vim.log.levels.WARN)
         return
     end
 
+    M.current_error_idx = M.current_error_idx - 1
+    if M.current_error_idx < 1 then -- wrap around
+        M.current_error_idx = #M.errors
+    end
 
+    local err = M.errors[M.current_error_idx]
+    -- Go to previous window
+    if buffer.source_winnr and vim.api.nvim_win_is_valid(buffer.source_winnr) then
+        vim.api.nvim_set_current_win(buffer.source_winnr)
+    else
+        vim.cmd("wincmd p")
+    end
+
+    vim.cmd("edit " .. err.file)
+    vim.api.nvim_win_set_cursor(0, {err.lnum, (err.col or 1) - 1})
 end
 
 --- Jump to the error under cursor or at current index
