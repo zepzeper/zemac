@@ -1,5 +1,7 @@
+---@class Zepzeper.Commands
 local M = {}
 
+--- Setup user commands for the plugin
 function M.setup()
     local zepzeper = require("zepzeper")
 

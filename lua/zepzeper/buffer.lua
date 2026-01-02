@@ -1,9 +1,33 @@
+---@class Zepzeper.Buffer
+---@field bufnr number|nil Buffer number for compile output
+---@field winnr number|nil Window number for compile output
+---@field job_id number|nil Current job ID
+---@field HEADER_LINES number Number of header lines (command + separator)
 local M = {}
 
+---@type number|nil
 M.bufnr = nil
+---@type number|nil
 M.winnr = nil
+---@type number|nil
 M.job_id = nil
+-- Command + divider line
+---@type number
+M.HEADER_LINES = 2
 
+--- Setup the buffer header with command and separator
+---@param command string The compile command to display
+function M.setup_header(command)
+    M.create()
+    local separator = string.rep("─", 80)
+    vim.api.nvim_buf_set_lines(M.bufnr, 0, -1, false, {
+        command,
+        separator,
+    })
+end
+
+--- Create the compile buffer if it doesn't exist
+---@return number bufnr The buffer number
 function M.create()
     if M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr) then
         return M.bufnr
@@ -21,6 +45,7 @@ function M.create()
     return M.bufnr
 end
 
+--- Open the compile buffer window
 function M.open()
     local bufnr = M.create()
     if M.winnr and vim.api.nvim_win_is_valid(M.winnr) then
@@ -32,6 +57,7 @@ function M.open()
     end
 end
 
+--- Close and delete the compile buffer
 function M.close()
     local bufnr = M.bufnr
 
@@ -40,18 +66,34 @@ function M.close()
     end
 end
 
+--- Clear the buffer content (preserving header)
 function M.clear()
     if M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr) then
-        vim.api.nvim_buf_set_lines(M.bufnr, 0, -1, false, {})
+        -- Only clear lines after header
+        local line_count = vim.api.nvim_buf_line_count(M.bufnr)
+        if line_count > M.HEADER_LINES then
+            vim.api.nvim_buf_set_lines(M.bufnr, M.HEADER_LINES, -1, false, {})
+        end
     end
 end
 
+--- Append lines to the buffer after the header
+---@param lines string[] Lines to append
 function M.append(lines)
     if M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr) then
-        vim.api.nvim_buf_set_lines(M.bufnr, -1, -1, false, lines)
+        -- Append after header, -1 means end of buffer
+        local line_count = vim.api.nvim_buf_line_count(M.bufnr)
+        vim.api.nvim_buf_set_lines(
+            M.bufnr,
+            line_count,
+            line_count,
+            false,
+            lines
+        )
     end
 end
 
+--- Toggle the compile buffer window visibility
 function M.toggle()
     if M.winnr and vim.api.nvim_win_is_valid(M.winnr) then
         vim.api.nvim_win_hide(M.winnr)
@@ -61,14 +103,20 @@ function M.toggle()
     end
 end
 
+--- Set the current job ID
+---@param id number|nil Job ID or nil to clear
 function M.set_job(id)
     M.job_id = id
 end
 
+--- Get the current job ID
+---@return number|nil job_id Current job ID
 function M.get_job()
     return M.job_id
 end
 
+--- Check if a job is currently running
+---@return boolean is_running True if a job is running
 function M.is_running()
     return M.job_id ~= nil
 end

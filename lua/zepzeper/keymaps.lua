@@ -1,12 +1,14 @@
+---@class Zepzeper.Keymaps
 local M = {}
 
 local config = require("zepzeper.config")
 
 --- Set a keymap if the key is not false/nil
----@param mode string
----@param lhs string|false
----@param rhs function|string
----@param opts table
+---@param mode string Vim mode ("n", "i", "v", etc.)
+---@param lhs string|false Left-hand side of mapping, or false to skip
+---@param rhs function|string Right-hand side of mapping
+---@param opts table Keymap options
+---@private
 local function map_if_set(mode, lhs, rhs, opts)
     if lhs and lhs ~= false then
         vim.keymap.set(mode, lhs, rhs, opts)
@@ -14,7 +16,7 @@ local function map_if_set(mode, lhs, rhs, opts)
 end
 
 --- Setup buffer-local keymaps for the compile window
----@param bufnr number
+---@param bufnr number Buffer number to set keymaps for
 function M.setup_buffer(bufnr)
     local keys = config.get("buffer_keymaps") or {}
     local opts = { buffer = bufnr, silent = true, nowait = true }
@@ -28,6 +30,14 @@ function M.setup_buffer(bufnr)
     map_if_set("n", keys.recompile, function()
         require("zepzeper").recompile()
     end, vim.tbl_extend("force", opts, { desc = "Recompile" }))
+
+    -- Run the (possibly edited) command from line 1
+    map_if_set("n", keys.run_header, function()
+        local cmd = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1]
+        if cmd and cmd ~= "" then
+            require("zepzeper").compile(cmd)
+        end
+    end, vim.tbl_extend("force", opts, { desc = "Run command from header" }))
 
     -- Kill running job
     map_if_set("n", keys.kill, function()
@@ -61,7 +71,7 @@ function M.setup_buffer(bufnr)
     end, vim.tbl_extend("force", opts, { desc = "Previous error" }))
 end
 
---- Setup global keymaps
+--- Setup global keymaps for compile functionality
 function M.setup_global()
     local keys = config.get("keymaps") or {}
     local opts = { silent = true }
