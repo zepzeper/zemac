@@ -115,7 +115,6 @@ end
 --- Append lines to the buffer after the header
 ---@param lines string[] Lines to append
 function M.append(lines)
-    local config = require("zemac.config")
     if M.bufnr and vim.api.nvim_buf_is_valid(M.bufnr) then
         -- Append after header, -1 means end of buffer
         local line_count = vim.api.nvim_buf_line_count(M.bufnr)
@@ -127,16 +126,6 @@ function M.append(lines)
             lines
         )
     end
-
-    -- -- Auto-scroll while keeping header visible
-    -- if config.get("auto_scroll") and M.winnr and vim.api.nvim_win_is_valid(M.winnr) then
-    --     vim.api.nvim_win_call(M.winnr, function()
-    --         -- Scroll to bottom
-    --         vim.cmd("normal! G")
-    --         -- Force header to stay visible at top
-    --         vim.fn.winrestview({ topline = 1 })
-    --     end)
-    -- end
 end
 
 --- Toggle the compile buffer window visibility

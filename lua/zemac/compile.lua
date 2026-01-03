@@ -111,6 +111,16 @@ function M.next_error()
 
     vim.cmd("edit " .. err.file)
     vim.api.nvim_win_set_cursor(0, { err.lnum, (err.col or 1) - 1 })
+
+    vim.notify(
+        string.format(
+            "Error %d of %d: %s:%d",
+            M.current_error_idx,
+            #M.errors,
+            err.file,
+            err.lnum
+        )
+    )
 end
 
 --- Jump to the previous error in the list
@@ -138,11 +148,43 @@ function M.prev_error()
 
     vim.cmd("edit " .. err.file)
     vim.api.nvim_win_set_cursor(0, { err.lnum, (err.col or 1) - 1 })
+
+    vim.notify(
+        string.format(
+            "Error %d of %d: %s:%d",
+            M.current_error_idx,
+            #M.errors,
+            err.file,
+            err.lnum
+        )
+    )
 end
 
 --- Jump to the error under cursor or at current index
 function M.goto_error()
-    -- TODO: implement
+    local buffer = require("zemac.buffer")
+    local cursor_line = vim.api.nvim_win_get_cursor(0)[1]
+
+    for i, err in ipairs(M.errors) do
+        if err.buffer_line == cursor_line then
+            M.current_error_idx = i
+
+            if
+                buffer.source_winnr
+                and vim.api.nvim_win_is_valid(buffer.source_winnr)
+            then
+                vim.api.nvim_set_current_win(buffer.source_winnr)
+            else
+                vim.cmd("wincmd p")
+            end
+
+            vim.cmd("edit " .. err.file)
+            vim.api.nvim_win_set_cursor(0, { err.lnum, (err.col or 1) - 1 })
+            return
+        end
+    end
+
+    vim.notify("No error on this line", vim.log.levels.INFO)
 end
 
 --- Kill the currently running compilation job
